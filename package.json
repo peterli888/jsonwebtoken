@@ -1,0 +1,9 @@
+{
+    "name": "node-token-auth",
+    "main": "server.js",
+    "dependencies": {
+        "body-parser": "^1.14.1",
+        "express": "^4.3.13",
+        "jsonwebtoken": "^5.4.1"
+    }
+}

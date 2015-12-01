@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>JSON Web Token Authentication</title>
+    <script type="text/javascript" src="secure.js"></script>
+  </head>
+  <body>
+    <form name="signin" method="POST" action="/secure/authenticate">
+      <p><input type="text" name="name" placeholder="name" autofocus required /></p>
+      <p><input type="password" name="password" placeholder="password" required/></p>
+      <p><input type="submit" value="Submit"/></p>
+    </form>
+    <p id="status">Not signed in</p>
+    <p><a id="secure" href="/secure/users">Get users</a></p>
+    <p id="users"></p>
+  </body>
+</html>
