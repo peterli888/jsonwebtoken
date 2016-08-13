@@ -1,13 +1,15 @@
 /**
  * @file Token authentication.
  * @see https://github.com/auth0/node-jsonwebtoken
+ * @author EHGO Analytics LLC
  */
 
 'use strict';
 
 var express = require('express'),
     app = express(),
-    routes = express.Router(),
+    secure = express.Router(),
+    open = express.Router(),
     bodyParser = require('body-parser'),
     jwt = require('jsonwebtoken'),
     config = require('./config'),
@@ -18,7 +20,7 @@ var express = require('express'),
 app.set(config.secretKey, config.secretValue);
 
 // Configure body-parser.
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 // Use this to force HTTPS on Heroku.
@@ -28,7 +30,7 @@ app.use(function (req, res, next) {
 });
 
 // POST /authenticate
-routes.post('/authenticate', function (req, res) {
+open.post('/authenticate', function (req, res) {
     var name = req.body.name,
         password = req.body.password,
         user, token;
@@ -43,12 +45,12 @@ routes.post('/authenticate', function (req, res) {
     });
     
     if (!user) {
-        res.json({ success: false,
-                   message: 'Bad user name.' });
+        res.json({success: false,
+                  message: 'Bad user name.' });
     } else {
         if (user.password !== password) {
-            res.json({ success: false,
-                       message: 'Authentication failed.' });
+            res.json({success: false,
+                      message: 'Authentication failed.' });
         } else {
             token = jwt.sign(user, app.get(config.secretKey), {
                 // Expires in seconds.
@@ -61,17 +63,25 @@ routes.post('/authenticate', function (req, res) {
     }
 });
 
+// Configure open routes.
+open.get('/open', function (req, res) {
+    res.json({message: 'Open access information.'});
+});
+
+// Configure public routes.
+open.use(express.static(__dirname + '/public/'));
+
 // Verify authentication from GET and POST
-routes.use(function (req, res, next) {
+secure.use(function (req, res, next) {
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
     console.log(req.headers);
-    
+
     if (token) {
         jwt.verify(token, app.get(config.secretKey), function (err, decoded) {
             if (err) {
-                return res.status(403).json({ success: false,
-                                              message: 'Go to login page.' });
+                return res.status(403).json({success: false,
+                                             message: 'Go to login page.' });
             } else {
                 req.decoded = decoded;
                 next();
@@ -82,21 +92,19 @@ routes.use(function (req, res, next) {
                                       message: 'No token. Go to login page.'
                                     });
     }
-    
+
 });
 
-// Check routes below for authenticated requests.
-
 // GET /users
-routes.get('/users', function (req, res) {
+secure.get('/users', function (req, res) {
     res.json(users);
 });
 
-// Use routes for /secure
-app.use('/secure', routes);           
+// Use secure routes with /secure
+app.use('/secure', secure);           
 
-// Configure public routes.
-app.use(express.static(__dirname + '/public/'));
+// Otherwise, use /
+app.use(open);
 
 // Use this for everything we cannot handle.
 app.use(function (req, res, next) {

@@ -1,4 +1,3 @@
-<!doctype html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -6,13 +5,14 @@
     <script type="text/javascript" src="secure.js"></script>
   </head>
   <body>
-    <form name="signin" method="POST" action="/secure/authenticate">
+    <form name="signx" method="POST" action="/authenticate">
       <p><input type="text" name="name" placeholder="name" autofocus required /></p>
       <p><input type="password" name="password" placeholder="password" required/></p>
-      <p><input type="submit" value="Submit"/></p>
+      <p><button type="submit" name="button" value="Sign In" style="width:8em;">Sign In</button></p>
     </form>
     <p id="status">Not signed in</p>
-    <p><a id="secure" href="/secure/users">Get users</a></p>
+    <p><a id="secure" href="/secure/users">Secure access</a></p>
+    <p><a id="open" href="/open">Open access</a></p>
     <p id="users"></p>
   </body>
 </html>
